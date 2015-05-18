@@ -23,10 +23,14 @@ def aidUrl(url):
 ###############################################################################
 parser = argparse.ArgumentParser(
 	formatter_class=argparse.RawDescriptionHelpFormatter,
-	description="Directory Scanner v. 0.2",
+	description="Directory Scanner v. 0.3",
 	epilog="""
 v. 0.1: Ken Eddy - files.eddy@gmail.com (https://github.com/showmehow/pypwn)
 v. 0.2: Dominik Schlecht - dominik.schlecht@hotmail.de (https://github.com/DominikSchlecht/pyDirBuster)
+	* Multithreading
+	* Landing-Page-Option
+v. 0.3: Dominik Schlecht
+	* Implemented TOR-Support
 
 Use this tool only agains your own sites or with allowance of the websites owner!
 Use only if allowed by your local law!
