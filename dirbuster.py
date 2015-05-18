@@ -1,19 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import urllib2
 import threading
 from time import sleep
+import urllib2
 import md5
 import sys
 import os
 import re
-
-print """
-Directory Scanner v.0.2
-Orignial (0.1): Ken Eddy - files.eddy@gmail.com (https://github.com/showmehow/pypwn)
-Modified (0.2): Dominik Schlecht - dominik.schlecht@hotmail.de (https://github.com/DominikSchlecht/pyDirBuster)
-"""
 
 ###############################################################################
 # Helper to make input urllib2-ready
@@ -27,7 +21,19 @@ def aidUrl(url):
 ###############################################################################
 # Handle parameters
 ###############################################################################
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(
+	formatter_class=argparse.RawDescriptionHelpFormatter,
+	description="Directory Scanner v. 0.2",
+	epilog="""
+v. 0.1: Ken Eddy - files.eddy@gmail.com (https://github.com/showmehow/pypwn)
+v. 0.2: Dominik Schlecht - dominik.schlecht@hotmail.de (https://github.com/DominikSchlecht/pyDirBuster)
+
+Use this tool only agains your own sites or with allowance of the websites owner!
+Use only if allowed by your local law!
+
+This software is published under the MIT License.
+""")
+
 parser.add_argument(
 	"url",
 	help="URL to scan"
@@ -56,14 +62,57 @@ parser.add_argument(
 	help="print additional information"
 )
 
+parser.add_argument(
+	"--tor",
+	action="store_true",
+	help="use tor"
+)
+
+parser.add_argument(
+	"--tor-port",
+	type=int,
+	default=9050,
+	help="if you have configured tor to use a different port than 9050, you can define it here"
+)
+
+parser.add_argument(
+	"--testip",
+	action="store_true",
+	help="see what external ip you get (to test tor, icanhazip.com is used.)"
+)
+
 args = parser.parse_args()
 
 # Save parameters to vars
 url = aidUrl(args.url)
 fileName = args.file
 verbose = args.verbose
-landingpage = aidUrl(args.landingpage)
+if args.landingpage:
+	landingpage = aidUrl(args.landingpage)
+else:
+	landingpage = None
 numThreads=args.threads+1 # Because the programm itself is a thread...
+###############################################################################
+
+###############################################################################
+# Init TOR if desired
+###############################################################################
+if args.tor:
+	print "[*] Using TOR"
+	proxy_support = urllib2.ProxyHandler({"http" : "127.0.0.1:8118"})
+	opener = urllib2.build_opener(proxy_support)
+	urllib2.install_opener(opener)
+###############################################################################
+
+###############################################################################
+# Test IP (must be after the TOR init)
+###############################################################################
+if args.testip:
+	user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
+	headers={'User-Agent':user_agent}	
+	request=urllib2.Request("http://icanhazip.com", None, headers)
+	print urllib2.urlopen(request).read()
+	sys.exit(0)
 ###############################################################################
 
 ###############################################################################
